@@ -1,0 +1,28 @@
+esphome:
+  name: firstnode2
+  platform: ESP8266
+  board: nodemcuv2
+
+wifi:
+  ssid: "X"
+  password: "x"
+
+captive_portal:
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+
+ota:
+
+switch:
+  - platform: gpio
+    pin: D1
+    name: "Simple LED"
+
+binary_sensor:
+  - platform: gpio
+    pin: D5
+    name: "Photoresistor"

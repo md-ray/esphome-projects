@@ -1,0 +1,18 @@
+esphome:
+  name: firstnode
+  platform: ESP8266
+  board: nodemcuv2
+
+wifi:
+  ssid: "X"
+  password: "x"
+
+captive_portal:
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+
+ota:

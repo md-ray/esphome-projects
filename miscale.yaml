@@ -1,0 +1,93 @@
+esphome:
+  name: m5stick-01
+  platform: ESP32
+  board: m5stick-c
+
+wifi:
+  ssid: "X"
+  password: "x"
+
+captive_portal:
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+
+ota:
+
+esp32_ble_tracker:
+
+sensor:
+  - platform: xiaomi_miscale2
+    mac_address: '0C:95:41:AC:48:22'
+    weight:
+      name: "Xiaomi Mi Scale Weight"
+  - platform: axp192
+    address: 0x34
+    i2c_id: bus_a
+    update_interval: 30s
+    battery_level:
+      name: "M5Stick Battery Level"
+      id: "m5stick_batterylevel"
+
+  - platform: wifi_signal
+    name: ${upper_devicename} WiFi Signal
+    id: wifi_dbm
+  - platform: uptime
+    name: ${upper_devicename} Uptime
+  - platform: homeassistant
+    name: "Temperature Sensor From Home Assistant"
+    entity_id: sensor.inet_ping_latency
+    id: inet_latency
+    
+spi:
+  clk_pin: GPIO13
+  mosi_pin: GPIO15
+
+i2c:
+   - id: bus_a
+     sda: GPIO21
+     scl: GPIO22
+     scan: True
+
+font:
+  - file: 'arial.ttf'
+    id: font1
+    size: 8
+
+  - file: 'arial.ttf'
+    id: font2
+    size: 36
+
+  - file: 'arial.ttf'
+    id: font3
+    size: 14
+
+time:
+  - platform: homeassistant
+    id: homeassistant_time
+  - platform: sntp
+    id: sntp_time
+
+display:
+  - platform: st7735
+    cs_pin: GPIO5
+    dc_pin: GPIO23
+    reset_pin: GPIO18
+    rotation: 270
+    lambda: |-
+      it.print(80, 0, id(font3), ST77XX_WHITE, TextAlign::TOP_CENTER, "WAN Internet Latency");
+      if (id(inet_latency).has_state()) {
+        char str[128];
+        //sprintf(str, "%.0f dBm", id(wifi_dbm).state);
+        //it.print(80, 40, id(font2), ST77XX_RED, TextAlign::CENTER, str);
+        sprintf(str, "%.0f ms", id(inet_latency).state);
+        it.print(80, 40, id(font2), ST77XX_RED, TextAlign::CENTER, str);
+        
+      } else {
+        it.print(80, 40, id(font2), ST77XX_RED, TextAlign::CENTER, "No Wifi");
+      }
+      // Print time in HH:MM format
+      it.strftime(80, 60, id(font3), ST77XX_BLUE, TextAlign::TOP_CENTER, "%H:%M", id(sntp_time).now());    
